@@ -585,7 +585,7 @@ body {
 
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     text-align: center;
 
 
@@ -618,27 +618,28 @@ body {
 
                 font-size: 5rem;
                 line-height: 1.2;
-                margin-bottom: 7rem;
+                margin-bottom: 5rem;
                 font-weight: bold;
                 letter-spacing: 0.2rem;
             }
 
             p {
                 color: #03086b;
-                font-size: 2.4rem;
-        
-               
+                font-size: 2rem;
+
+
                 text-align: center;
-                line-height: 2;
+                line-height: 2.4;
+                
 
                 span {
                     background-color: #1d71a59b;
-                    font-weight: bold;
-                    display: inline-block;
+                    padding: 0.3em 1rem;
+               
                     border-radius: 1rem;
                     color: #eaeaea;
-                  
-                    padding: 0.1rem 1rem;
+
+
                     font-size: 2.4rem;
 
                 }

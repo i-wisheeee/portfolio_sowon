@@ -404,7 +404,7 @@ body {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   text-align: center;
 }
 .section-01 .card-cover {
@@ -434,24 +434,22 @@ body {
   -webkit-text-fill-color: #f7f8f4;
   font-size: 5rem;
   line-height: 1.2;
-  margin-bottom: 7rem;
+  margin-bottom: 5rem;
   font-weight: bold;
   letter-spacing: 0.2rem;
 }
 .section-01 .card-cover .text p {
   color: #03086b;
-  font-size: 2.4rem;
+  font-size: 2rem;
   text-align: center;
-  line-height: 2;
+  line-height: 2.4;
   margin-bottom: 6rem;
 }
 .section-01 .card-cover .text p span {
   background-color: rgba(29, 113, 165, 0.6078431373);
-  font-weight: bold;
-  display: inline-block;
+  padding: 0.3em 1rem;
   border-radius: 1rem;
   color: #eaeaea;
-  padding: 0.1rem 1rem;
   font-size: 2.4rem;
 }
 .section-01 .card-cover .text .highlight {
