@@ -1,0 +1,17 @@
+{
+    "liveServer.settings.port": 5502,
+    "editor.quickSuggestions": {
+        "other": "off"
+    },
+    "typescript.preferences.includePackageJsonAutoImports": "off",
+    "html.suggest.hideEndTagSuggestions": true,
+    "editor.defaultFormatter": null,
+    "json.schemas": [
+
+
+    ],
+    "emmet.showSuggestionsAsSnippets": true,
+    "emmet.showAbbreviationSuggestions": true,
+    "workbench.settings.useSplitJSON": true
+}
+

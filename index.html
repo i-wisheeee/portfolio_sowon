@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>김소원포트폴리오</title>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
+    <link rel="stylesheet" href="css/main.scss">
+    <link rel="stylesheet" href="css/main.css">
+
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.27/bundled/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.3/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.3/ScrollTrigger.min.js"></script>
+    <script src="lib/SplitText.min.js"></script>
+    <script src="lib/ScrollToPlugin.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@latest/bundled/lenis.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.js"></script>
+    <script>
+        $(function () {
+            AOS.init();
+
+            let i = 0;
+            let topBanner = $('.top_banner ul li');
+
+            setInterval(function () {
+                i++;
+                console.log(i)
+                if (i >= topBanner.length) {
+                    i = 0;
+
+                }
+                topBanner.removeClass('on');
+                topBanner.eq(i).addClass('on');
+            }, 3000);
+
+            const nav = document.getElementById("nav");
+            const menuBtn = document.querySelector(".menu-btn");
+            let menuOpen = false;
+
+            function openMenu() {
+                if (menuOpen) return;
+                menuOpen = true;
+                nav.classList.add("active");
+
+                gsap.to(nav, {
+                    x: "0%",    // 화면 안쪽으로
+                    opacity: 1,
+                    duration: 0.6,
+                    ease: "power3.out",
+                });
+            }
+
+            function closeMenu() {
+                menuOpen = false;
+                nav.classList.remove("active");
+
+                gsap.to(nav, {
+                    x: "-110%", // 왼쪽으로 숨김
+                    opacity: 0,
+                    duration: 0.6,
+                    ease: "power3.in",
+                });
+            }
+
+
+            // 메뉴 버튼 클릭
+            menuBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                menuBtn.classList.add("bounce");
+                setTimeout(() => menuBtn.classList.remove("bounce"), 500);
+                menuOpen ? closeMenu() : openMenu();
+            });
+
+            // 메뉴 외부 클릭 시 닫기
+            document.addEventListener("click", (e) => {
+                if (menuOpen && !nav.contains(e.target) && !menuBtn.contains(e.target)) {
+                    closeMenu();
+                }
+            });
+
+            // 메뉴 내 링크 클릭 시 닫기 + 마우스 이미지 효과
+            Array.from(nav.getElementsByTagName("a")).forEach((link) => {
+                link.addEventListener("click", closeMenu);
+
+                link.addEventListener("mousemove", (e) => {
+                    const rect = link.getBoundingClientRect();
+                    const img = link.querySelector("img");
+                    if (img) {
+                        img.style.left = `${e.clientX - rect.left}px`;
+                        img.style.top = `${e.clientY - rect.top}px`;
+                    }
+                });
+            });
+
+            // 마우스 Y축 부드럽게 따라가기
+            window.addEventListener("mousemove", (e) => {
+                if (!menuOpen) return;
+                const percent = e.clientY / window.innerHeight;
+                const translateY = percent * nav.offsetHeight * -0.2;
+                gsap.to(nav, { y: translateY, duration: 1.2, ease: "power2.out" });
+            });
+
+            //메인비주얼
+
+
+            // Lenis 스크롤
+            const lenis = new Lenis();
+            lenis.on("scroll", ScrollTrigger.update);
+            gsap.ticker.add((time) => lenis.raf(time * 1000));
+            gsap.ticker.lagSmoothing(0);
+
+            // 초기 emoji 위치
+            $(".emo").each(function () {
+                gsap.set($(this), {
+                    x: $(this).attr("data-x"),
+                    y: $(this).attr("data-y"),
+                    rotate: $(this).attr("data-rotate"),
+                    zIndex: $(this).attr("data-z") || 1
+                });
+            });
+
+            // emoji 스크롤 애니메이션
+            gsap.utils.toArray(".emo").forEach((emoji) => {
+                gsap.from(emoji, {
+                    scrollTrigger: {
+                        trigger: ".main_visual",
+                        start: "top bottom",
+                        end: "bottom top",
+                        scrub: 1
+                    },
+                    x: "47vw",
+                    y: "50vh",
+                    rotate: 0
+                });
+            });
+
+            // 마우스 따라다니는 emoji
+            $(document).mousemove(function (e) {
+                $(".emo").each(function () {
+                    const bound = parseFloat($(this).attr("data-bound")) || 20;
+                    gsap.to($(this), {
+                        xPercent: map(e.pageX, 5, window.innerWidth, -bound, bound),
+                        yPercent: map(e.pageY, 50, window.innerHeight, -bound, bound),
+                        duration: 0.1
+
+                    });
+                });
+            });
+
+            // 마우스 따라 nav 이미지 움직임
+            $("#nav a").on("mousemove", function (e) {
+                const rect = this.getBoundingClientRect();
+                const $img = $(this).find("img");
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                $img.css({ left: `${x}px`, top: `${y}px` });
+            });
+
+            // 버튼 hover 효과
+            $("button").hover(
+                function () {
+                    gsap.to(".hover-btn", { y: "60%", duration: 0.1 });
+                    gsap.to("h1", { color: "#5b99fc" });
+                },
+                function () {
+                    gsap.to(".hover-btn", { y: "-100%", duration: 0.2 });
+                    gsap.to("h1", { color: "#4287f5" });
+                }
+            );
+
+            // info-cont 등장
+
+
+            gsap.fromTo(
+                ".info-cont",
+                { autoAlpha: 0, y: 50 }, // 초기 상태: 안 보이고 아래쪽에 위치
+                {
+                    autoAlpha: 1,  // 등장하면서 보이게
+                    y: 0,          // 원래 위치로 이동
+                    duration: 1,
+                    scrollTrigger: {
+                        trigger: ".inner", // 스크롤 감지 영역
+                        start: "top 40%",        // 화면 중간쯤에서 등장
+                        toggleActions: "play none none reverse" // 스크롤 올리면 다시 사라짐
+                    }
+                }
+            );
+
+
+
+            function map(value, inMin, inMax, outMin, outMax) {
+                value = Math.min(Math.max(value, inMin), inMax); // 범위 제한
+                return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+            }
+
+            ///메인비주얼-스크롤텍스트
+
+            gsap.to(".textBox .mask .text", {
+                backgroundSize: "100% 100%",
+                opacity: 0, // 높이를 100%로 채움
+                ease: "none",
+                scrollTrigger: {
+                    trigger: ".textBox",
+                    start: "top 70%",
+                    end: "bottom 30%",
+                    scrub: 1,
+                    //markers: true // 디버그용
+                }
+            });
+
+
+
+            //메인1
+
+            // 카드 등장 애니메이션
+            gsap.to(".card", {
+                y: 0,
+                scale: 1,
+                opacity: 1,
+                duration: 0.8,
+                ease: "power3.out",
+                stagger: 0.2,
+                scrollTrigger: {
+                    trigger: ".section-02",
+                    start: "top 90%",
+                    toggleActions: "play none none reverse",
+                },
+            });
+
+            // 메인2 - result 등장 애니메이션
+            $(".result").each(function (index, element) {
+                gsap.to(element, {
+                    scrollTrigger: {
+                        trigger: element,
+                        start: "top 80%",
+                        toggleActions: "play none none reverse",
+                    },
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.8,
+                    ease: "power3.out",
+                });
+            });
+
+            // 스킬
+
+
+
+            //메인3
+
+            //section-03 
+
+            // 01. Circle animation
+            gsap.timeline({
+                scrollTrigger: {
+                    trigger: '.con02',
+                    start: 'top center',
+                    end: 'bottom top',
+                    scrub: 1,
+                    // markers: true
+                }
+            })
+                .fromTo('.circle',
+                    { width: 0, height: 0, top: '3%', ease: 'elastic.out(1, 0.3)' },
+                    { width: 2500, height: 2500, top: '40%' },
+                    0
+                );
+
+            // 02. Text box animation
+            gsap.timeline({
+                scrollTrigger: {
+                    trigger: '.con02 .text_box',
+                    start: 'top 80%',
+                    end: 'bottom 60%',
+                    scrub: 1,
+                }
+            })
+                .fromTo('.text_box',
+                    { top: '50%', opacity: 0, ease: 'power2.out' },
+                    { top: '40%', opacity: 1 },
+                    0
+                );
+
+
+            //메인4
+
+
+
+            $(".div-inner-1, .div-inner-2, .div-inner-3, .div-inner-4, .div-inner-5, .div-inner-6").each(function () {
+                let tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this,
+                        start: "center top",
+                        end: "center+=100% top",
+                        scrub: 1,
+                        pin: true
+                    }
+                });
+
+                tl.to($(this).children("section"), {
+                    scale: 0.5,
+                    opacity: 0,
+                    rotate: -10,
+                    filter: "blur(20px) grayscale(100%)",
+                });
+            });
+
+
+            //메인5
+
+
+            $(document).ready(function () {
+                $('.card-figure img').hover(
+                    function () {
+                        $(this).css({
+                            'transform': 'scale(2)',
+                            'z-index': '10',
+                            'position': 'relative'
+                        });
+                        $(this).closest('.card-figure').css('overflow', 'visible');
+                    },
+                    function () {
+                        $(this).css({
+                            'transform': 'scale(1)',
+                            'z-index': '1',
+                            'position': 'relative'
+                        });
+                        $(this).closest('.card-figure').css('overflow', 'hidden');
+                    }
+                );
+            });
+
+
+            //탑버튼
+
+
+
+
+
+            $(window).on("scroll", function () {
+                if ($(this).scrollTop() > 200) {
+                    $("#topbtn").fadeIn(300);
+                } else {
+                    $("#topbtn").fadeOut(300);
+                }
+            });
+
+            // 클릭 시 부드럽게 맨 위로
+            $("#topbtn").on("click", function () {
+                $("html, body").animate({ scrollTop: 0 }, 800, "swing");
+
+            });
+
+
+            //푸터아코디언메뉴
+
+            $('.footnav .depth-01').on('click', function (e) {
+                e.preventDefault();
+
+                const $footnav = $(this).closest('.footnav');
+                const submenu = $(this).siblings('.depth-02');
+
+                if (submenu.is(':hidden')) {
+                    // 현재 footnav 내에서만 다른 메뉴 닫기
+                    $footnav.find('.depth-02').slideUp();
+                    $footnav.find('.depth-01').removeClass('active');
+
+                    // 클릭한 메뉴 열기
+                    submenu.slideDown();
+                    $(this).addClass('active');
+                } else {
+                    // 다시 클릭 시 닫기
+                    submenu.slideUp();
+                    $(this).removeClass('active');
+                }
+            });
+
+
+
+
+            //푸터컨텍트메뉴
+
+
+            $('.footer .con li a').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation(); // document로 이벤트 전달 막기
+
+                const btnText = $(this).text();
+                let info = '';
+                let modalClass = '';
+
+
+                // 정보 설정
+                if (btnText === 'kakao') {
+                    info = 'fthg0302@kakao.com';
+                    $('#modalBox').addClass('kakao'); // QR 표시
+                } else if (btnText === 'Mail') {
+                    info = 'fthg0207@naver.com';
+                    $('#modalBox').removeClass('kakao'); // QR 제거
+                } else if (btnText === 'Phone') {
+                    info = ' 010-2047-8672';
+                    $('#modalBox').removeClass('kakao'); // QR 제거
+                }
+                else if (btnText === 'Portfolio PDF') {
+                    info = '<a href="../img/kim.pdf" target="_blank">Portfolio PDF Ver. 바로가기<br />(Click)</a>';
+                    $('#modalBox').removeClass('kakao'); // QR 제거
+                }
+                //$('#modalText').text(info);
+                $('#modalText').html(info);
+
+                // 버튼 위치 계산 (footer를 기준으로)
+                const parentOffset = $('.footer').offset();
+                const btnOffset = $(this).offset();
+                const top = btnOffset.top - parentOffset.top + $(this).outerHeight() + 5;
+                const left = btnOffset.left - parentOffset.left;
+
+                $('#modalContent').css({
+                    top: top + 'px',
+                    left: left + 'px'
+                }).fadeIn();
+            });
+
+            // 모달 안 클릭 시 닫히지 않게
+            $('#modalBox').on('click', function (e) {
+                e.stopPropagation();
+            });
+
+            // 닫기 버튼 클릭
+            $('#modalClose').on('click', function () {
+                $('#modalContent').fadeOut();
+            });
+
+            // 바깥 클릭 시 모달 닫기
+            $(document).on('click', function () {
+                $('#modalContent').fadeOut();
+            });
+
+
+
+
+        });//script end
+    </script>
+</head>
+
+
+
+<body>
+    <div id="wrap">
+        <div class="top_banner">
+            <ul>
+                <li class="on">본 포트폴리오는 1920px에 최적화 되어있습니다.</li>
+                <li>또한 반응형 제외 제작물또한 동일함을 알려드립니다.</li>
+            </ul>
+        </div><!-- .top_banner end -->
+
+        <main class="main" id="main_visual">
+
+
+            <header class="header">
+                <div class="inner">
+                    <button class="menu-btn">Menu</button>
+                    <nav id="nav">
+                        <a href="#main_visual">
+                            <span>MAIN</span>
+                            <img src="img/main_visualmenu.jpg" />
+                        </a>
+                        <a href="#section-02">
+                            <span>ABOUT <em>김소원</em></span>
+                            <img src="img/sowon.jpg" />
+                        </a>
+                        <a href="#section-03">
+                            <span>PROJECT</span>
+                            <img src="img/nav3.png" />
+                        </a>
+                        <a href="#section-05">
+                            <span>GRAPHIC DESIGN</span>
+                            <img src="img/section-05.jpg" />
+                        </a>
+                        <a href="#footer">
+                            <span>CONTACT</span>
+                            <img src="img/footer.jpg" />
+                        </a>
+                    </nav>
+                </div><!-- .inner end -->
+
+
+            </header><!-- header end -->
+
+
+
+            <section class="main_visual">
+                <div class="textBox">
+                    <span class="mask">
+                        <span class="text">
+
+                            𓆇 ₊ 𓂃 ⊹Connecting<br />
+
+                            The<br />
+                            Dots<br />
+                            . ˚⁎ ◌ ｡ﾟ⊹ <br />
+                        </span><!-- .text end -->
+                    </span><!-- .mask end -->
+                </div><!-- .textBox end -->
+                <div class="inner">
+
+
+
+
+
+
+
+
+
+
+
+                    <div class="emo shad" data-x='10vw' data-y='50vh' data-rotate='-40' data-bound='40' data-z='50'>
+                        <img src="img/main_1.png" alt="메인키워드1">
+                    </div>
+                    <div class="emo shad" data-x='20vw' data-y='70vh' data-rotate='-30' data-bound='50' data-z='40'>
+                        <img src="img/main_2.png" alt="메인키워드2">
+                    </div>
+                    <div class="emo shad" data-x='60vw' data-y='20vh' data-rotate='10' data-bound='30' data-z='20'>
+                        <img src="img/main_11.png" alt="메인키워드3">
+                    </div>
+                    <div class="emo shad" data-x='70vw' data-y='70vh' data-rotate='10' data-bound='20'>
+                        <img src="img/main_3.png" alt="메인키워드4">
+                    </div>
+                    <div class="emo shad" data-x='30vw' data-y='20vh' data-rotate='-12' data-bound='30' data-z='30'>
+                        <img src="img/main_5.png" alt="메인키워드5">
+                    </div>
+                    <div class="emo shad" data-x='75vw' data-y='50vh' data-rotate='20' data-bound='50'>
+                        <img src="img/main_6.png" alt="메인키워드6">
+                    </div>
+                    <div class="emo shad" data-x='10vw' data-y='10vh' data-rotate='-20' data-bound='50' data-z='60'>
+                        <img src="img/main_7.png" alt="메인키워드7">
+                    </div>
+                    <div class="emo shad" data-x='30vw' data-y='60vh' data-rotate='-5' data-bound='10'>
+                        <img src="img/main_8.png" alt="메인키워드8">
+                    </div>
+                    <div class="emo shad" data-x='20vw' data-y='30vh' data-rotate='10' data-bound='70' data-z='90'>
+                        <img src="img/main_9.png" alt="메인키워드9">
+                    </div>
+                    <div class="emo shad" data-x='80vw' data-y='10vh' data-rotate='10' data-bound='70' data-z='90'>
+                        <img src="img/main_10.png" alt="메인키워드10">
+                    </div>
+                    <div class="emo shad" data-x='50vw' data-y='20vh' data-rotate='10' data-bound='70' data-z='90'>
+                        <img src="img/main_4.png" alt="메인키워드11">
+                    </div>
+
+
+
+
+
+
+
+
+                    <div class="info-wrap">
+                        <div class="info-cont">
+                            <h1>Web</h1>
+                            <br>
+                            <h1>Portfolio</h1>
+                            <br>
+                            <br>
+                            <div class="shad">
+                                <a href="#section-04">Project</a>
+                            </div><!-- .shad end -->
+
+
+                        </div><!-- nfo-cont -->
+
+
+
+                    </div><!-- nfo-wrap -->
+
+                    <div class="btn">
+                        <a href="#section-02" class="btn-left">About me</a>
+                        <a href="#footer" class="btn-right">Contact</a>
+                    </div><!-- .btn end -->
+                </div><!-- .inner end -->
+
+            </section><!-- main_visual end -->
+
+
+
+
+
+
+
+            <section class="section-01" id="section-01" data-aos="zoom-in" data-aos-delay="400">
+
+                <div class="grain"></div>
+
+
+                <div class="card-cover">
+
+                    <div class="text">
+                        <h2>Connecting the Dots:<br /> From Structure to Experience</h2>
+                        <p>
+                            <span>'점'</span> 하나하나가 모여 <span>'선'</span>을 이루고, 그 선이 이어져 하나의 <span>'화면'</span>이 됩니다.<br />
+                            퍼블리싱은 그 <span>‘연결의
+                                과정’</span>입니다.<br />
+                            단순한 연결 속에서 기술은 경험이 되고, 감성은 구조 속에서 완성됩니다. <br /> 그리고 그 모든 흐름 안에는 저의 <span>시간</span>이
+                            있습니다.<br />
+                            <span>시행착오와 탐색의 흔적 등, 작은 점</span>이 쌓여 지금의 저를 만들었습니다.<br />
+                            구조를 설계하고 감성을 구현하는 사람, 그 과정 속에서 쌓인 감각과 기술,<br /> 그것이 <span>"지금의 나를 만든 선"</span>이며, <br />저는 그
+                            모든
+                            경험을 연결해 <span>현재의 세상을 디자인하고 구현해 내는 웹 퍼블리셔</span>입니다.
+                        </p>
+                        <span class="highlight">앞으로 저와의 여정을 함께해 주세요.</span>
+                        <em><img src="img/ArrowDown.png" alt="화살표밑"></em>
+                    </div><!-- .text end -->
+
+                </div><!--card-cover end  -->
+            </section><!-- .section-01 end -->
+
+
+
+
+
+            <!-- 메인2 -->
+            <section class="section-02" id="section-02" data-aos="zoom-in-up" data-aos-delay="400">
+                <div class="inner">
+                    <section class="card" id="design">
+                        <div class="icon">👩🏻‍💻</div>
+
+                        <div class="image">
+                            <img src="img/me.jpg" alt="증명사진">
+                            <ul class="contact">
+                                <li class="group">
+                                    <ul class="name">
+                                        <li class="big">김소원</li>
+                                        <li>Kim Sowon</li>
+                                    </ul><!-- name -->
+                                    <ul class="birth">
+                                        <li class="big">B</li>
+                                        <li>1995.06.07</li>
+                                    </ul><!-- birth -->
+                                    <ul class="phone">
+                                        <li class="big">P</li>
+                                        <li>010-2047-8672</li>
+                                    </ul><!-- phone -->
+                                    <ul class="mail">
+                                        <li class="big">M</li>
+                                        <li>fthg0207@naver.com</li>
+                                    </ul><!-- mail -->
+                                </li><!-- .group end -->
+                                <button><a href="img/김소원_입사지원서.pdf" target="_blank">이력서보기</a></button>
+                            </ul><!-- .contact end -->
+                        </div><!--  image end -->
+                    </section><!-- .card design -->
+
+
+
+
+                    <div class="card" id="tech">
+                        <div class="icon">💻</div>
+                        <div class="item">
+                            <h2>Education</h2>
+                            <ul class="depth-01">
+                                <li class="jump"><span class="bold">2016</span> 부산예술대학교 실용음악과 졸업</li>
+                                <li class="jump"><span class="bold">2014</span> 양산여자고등학교 졸업</li>
+                            </ul><!-- Education end -->
+                            <ul><!-- depth-01 end -->
+                        </div><!-- .item end -->
+
+                        <div class="item">
+                            <h2>Certifications</h2>
+                            <ul class="depth-01">
+                                <li class="jump"><span class="bold">2007</span> 워드프로세서 2급</li>
+                                <li class="jump"><span class="bold">2006</span> 워드프로세서 3급</li>
+                            </ul><!-- Education end -->
+                            <ul><!-- depth-01 end -->
+                        </div><!-- .item end -->
+
+                        <div class="item">
+                            <h2>Experience</h2>
+                            <ul class="depth-01">
+                                <li><span class="bold">2021.03-2025.03</span> 신세계인터네셔널 SSG.COM 근무</li>
+                                <li><span class="bold">2020.11-2021.03</span> 쿠팡물류센터 근무</li>
+                                <li><span class="bold">2019.06-2020.05</span> 롯데백화점 MVG라운지 근무</li>
+                                <li><span class="bold">2017.11-2019.01</span> 맥도날드 근무</li>
+                                <li><span class="bold">2016.04-2017.11</span> 음료판매점 쥬씨 근무</li>
+
+
+                            </ul><!-- depth-01 end -->
+
+                            <ul class="dpth-02">
+                                <h2>Activities</h2>
+                                <li class="mov"><span class="bold">2025</span> 그린컴퓨터아카데미 UI/UX 반응형 웹디자인 & 웹퍼블리셔 양성과정 수료
+                                </li>
+                                <li class="mov"><span class="bold">2020.12</span> 부산영상위원회 부산아시아영화학교주최 2020맞춤형
+                                    영화영상전문인력 양성 온라인
+                                    영화음악심화과정 수료</li>
+                                <li class="mov"><span class="bold">2016.01</span> 부산 문화재단 주최 기본 음향기기의 세팅과 운영 실습과정 수료
+                                </li>
+                                <li class="mov"><span class="bold">2015.06</span> 부경대학교주최 부경대학교 대학가요제 동상수상</li>
+                            </ul><!-- depth-02 -->
+                        </div><!-- .item end -->
+
+
+
+
+
+                    </div><!-- card tech -->
+                    <div class="result" id="result">
+                        <div class="item">
+                            <h2>Skills</h2>
+                            <p><span>HTML5</span>를 이용하여 접근성을 고려한 마크업 작성이 가능하며, 반응형 웹페이지 생성과 웹 기본 구조 이해가 가능합니다.
+                                <span>Photoshop</span>을 활용한 사진 편집 및 보정, 디자인 시안 제작과
+                                <span>Figma</span>의 프로토타입 구현으로 화면을 시뮬레이션하고 시각화하는 기능을 배웠으며,
+                                웹, 앱, <span>인터페이스 디자인</span> 및 스토리보드 제작이 가능합니다. 또한
+                                <span>CSS</span> 반응형 디자인 구현과 <span>JavaScript</span>를 이용한 웹페이지 기능 동작 구현이 가능합니다.
+                                <span>Visual Studio Code</span>를 활용해 코드를 작성하고 관리하며,
+                                <span>Sass</span>, <span>jQuery</span>를 이용해 반응형 웹사이트와 동적 인터페이스를 구현할 수 있습니다.
+                                <span>Notion</span>을 통해 프로젝트를 정리하고, <span>Adobe Express</span>와
+                                <span>Illustrator</span>를 활용하여 디자인을 보완할 수 있으며,
+                                <span>GitHub</span>로 버전 관리까지 수행할 수 있습니다.
+
+
+                            </p>
+                        </div><!-- .item end -->
+
+
+
+                    </div><!--result end  -->
+
+
+                </div><!-- .inner -->
+
+
+
+
+
+
+
+
+                <!-- skill -->
+                <div class="skill_box">
+                    <div class="glass"><img src="img/2adobi.png" alt="adobe"></div>
+                    <div class="glass"><img src="img/2ai.png" alt="ai"></div>
+                    <div class="glass"><img src="img/2figma.png" alt="figma"></div>
+                    <div class="glass"><img src="img/2git.png" alt="git"></div>
+                    <div class="glass"><img src="img/2html5.svg" alt="html"></div>
+                    <div class="glass"><img src="img/2jquery.svg" alt="jQuery"></div>
+                    <div class="glass"><img src="img/2js.svg" alt="JavaScript"></div>
+                    <div class="glass"><img src="img/2notion.png" alt="notion"></div>
+                    <div class="glass"><img src="img/2ps.png" alt="Photoshop"></div>
+                    <div class="glass"><img src="img/2scss.png" alt="scss"></div>
+                    <div class="glass"><img src="img/2visual.png" alt="Visual"></div>
+                    <div class="glass"><img src="img/css3.png" alt="css"></div>
+                </div><!-- skill_box end -->
+
+
+            </section><!-- section-02 -->
+
+            <section class="section-03" id="section-03">
+
+
+                <section class="con01">
+                    <h2 data-aos="fade-right" data-aos-delay="700"><span data-aos="fade-right"
+                            data-aos-delay="600">My</span>Project</h2>
+                </section><!-- con01 end -->
+
+                <div class="con02">
+                    <div class="circle">
+                        <div class="text_box">
+                            <p>
+                                UIUX<br />Design
+                            </p>
+                        </div><!-- text_box end -->
+                    </div><!-- circle end -->
+                </div><!-- con02 end -->
+
+                <div class="con03">
+
+                </div><!-- .con03 end -->
+
+            </section><!-- section-03 end -->
+
+
+
+
+
+            <!-- 메인4 -->
+
+            <section class="section-04" id="section-04">
+
+                <div class="div-inner-1">
+                    <section class="section-1">
+                        <div class="text">
+                            <div class="box">
+                                <div class="title">
+                                    <h2>유한킴벌리</h2>
+                                    <ul class="color">
+                                        <li class="col">반응형 웹 리뉴얼 프로젝트</li>
+                                        <li>메인페이지</li>
+                                        <li>서브페이지</li>
+                                    </ul>
+
+                                </div><!-- .title end -->
+
+
+                                <p>대한민국 생활용품기업 <em>유한킴벌리의 웹사이트 반응형 리뉴얼 프로젝트</em>입니다.
+                                    기존 풀페이지 방식의 웹사이트를 gsap와 JavaScript/jQuery등의 라이브러리를 활용해 현시대의 트렌디한 방식에 어울리고
+                                    사용자의 불편한부분을 개선하여 리뉴얼했습니다.<br />
+
+                                </p>
+                            </div><!-- .box end -->
+
+
+
+
+
+                            <ul class="list">
+                                <li>#Photoshop</li>
+                                <li>#Figma</li>
+                                <li>#illustrator</li>
+                                <li>#HTML5</li>
+                                <li>#CSS/SCSS</li>
+                                <li>#JavaScript</li>
+                                <li>#jQuery</li>
+                                <li>#GSAP</li>
+                                <li>#AOS</li>
+                                <li>#SwiperSlide</li>
+                            </ul><!-- list end -->
+
+
+                            <span>기획/디자인/퍼블리싱 100%</span>
+
+                            <em>📌 Click here </em>
+                            <ul class="btn">
+                                <li><a href="https://i-wisheeee.github.io/yuhan-kimberly/" target="_blank"><span>Web
+                                            site💻</span></a></li>
+                                <li><a href="#"><span>Sub Page⌨</span></a></li>
+                                <li><a href="https://github.com/i-wisheeee/yuhan-kimberly" target="_blank"><span>Git hub
+                                            <img src="img/2git.png" alt="git"></span></a></li>
+                                <li><a href="img/유한킴벌리.pdf" target="_blank"><span>Process 📁</span></a></li>
+                                <li><a href="https://www.figma.com/design/BVrhCnkFtuAffNXHtA9JRQ/%EC%9C%A0%ED%95%9C%ED%82%B4%EB%B2%8C%EB%A6%AC?node-id=0-1&p=f&t=QGHNxUohIa4x0EUh-0"
+                                        target="_blank"><span>Figma <img src="img/2figma.png" alt="figma"></span></a>
+                                </li>
+                                <li><a href="img/yuhanpd.pdf" target="_blank"><span>Notion <img src="img/2notion.png"
+                                                alt="notion"></span></a></li>
+                            </ul><!-- btn end -->
+
+                        </div><!-- .text end -->
+
+                        <div class="mockup">
+                            <p>💬이미지위에 마우스를 갖다대면 사진이 스크롤됩니다.🖱</p>
+                            <div class="wrap">
+
+                                <div class="image">
+
+                                    <img src="img/yuhan.png" alt="유한킴벌리">
+
+                                </div><!-- .image end -->
+
+                            </div><!-- wrap end -->
+
+                        </div><!-- .mockup end -->
+
+                    </section><!-- section-1 end -->
+                </div><!-- div-inner-1 end -->
+
+
+
+
+                <div class="div-inner-2">
+                    <section class="section-2">
+                        <div class="text">
+                            <div class="box">
+                                <div class="title">
+                                    <h2>고롱고롱</h2>
+                                    <ul class="color">
+                                        <li class="col">반응형 웹 리뉴얼 프로젝트</li>
+                                        <li>메인페이지</li>
+
+                                    </ul>
+
+                                </div><!-- .title end -->
+
+
+                                <p>고양이용품(집, 방석, 쿠션 등)을 디자인 및 판매하는 자사 민간온라인 쇼핑몰 브랜드 <em>고롱고롱 웹사이트 반응형 리뉴얼
+                                        프로젝트</em>입니다.<br />
+                                    기존의 정리되지않아 불편했던 사이트의 구성을 사용자가 접근하기 편리하게 리뉴얼하고
+                                    브랜드가 가진 이미지를 보완하기위해 gsap와 JavaScript/jQuery등의 라이브러리를 활용해
+                                    꾸밈요소를 추가하여 '고롱고롱'이라는 이미지를 극대화시켰습니다.
+
+
+                                </p>
+                            </div><!-- .box end -->
+
+
+
+
+
+                            <ul class="list">
+                                <li>#Figma</li>
+                                <li>Photoshop</li>
+                                <li>#HTML5</li>
+                                <li>#CSS</li>
+                                <li>#JavaScript</li>
+                                <li>#jQuery</li>
+                                <li>#GSAP</li>
+                                <li>#AOS</li>
+                                <li>#SwiperSlide</li>
+                            </ul><!-- list end -->
+
+
+                            <span>기획/디자인/퍼블리싱 100%</span>
+
+                            <em>📌 Click here </em>
+                            <ul class="btn">
+                                <li><a href="https://i-wisheeee.github.io/gorong_gorong/" target="_blank"><span>Web
+                                            site💻</span></a></li>
+
+                                <li><a href="https://github.com/i-wisheeee/gorong_gorong" target="_blank"><span>Git hub
+                                            <img src="img/2git.png" alt="git"></span></a></li>
+                                <li><a href="img/고롱고롱.pdf" target="_blank"><span>Process 📁</span></a></li>
+                                <li><a href="https://www.figma.com/design/frR8VIeRT4S0F61k9OeKbK/%EA%B3%A0%EB%A1%B1%EA%B3%A0%EB%A1%B1%EC%9B%B9%EC%82%AC%EC%9D%B4%ED%8A%B8-%EB%B0%98%EC%9D%91%ED%98%95%EB%A6%AC%EB%89%B4%EC%96%BC?node-id=0-1&p=f&t=vDOGnljjCbKV9pL0-0"
+                                        target="_blank"><span>Figma <img src="img/2figma.png" alt="figma"></span></a>
+                                </li>
+                                <li><a href="img/gorong_n-tion.pdf" target="_blank"><span>Notion <img
+                                                src="img/2notion.png" alt="notion"></span></a></li>
+                                <li><a href="https://goronggorong.co.kr/" target="_blank"><span>gorong😺<img
+                                                src="img/2notion.png" alt="notion"></span></a></li>
+                            </ul><!-- btn end -->
+
+                        </div><!-- .text end -->
+
+                        <div class="mockup">
+                            <p>💬이미지위에 마우스를 갖다대면 사진이 스크롤됩니다.🖱</p>
+
+                            <div class="wrap">
+
+                                <div class="image">
+
+                                    <img src="img/go-pc.png" alt="고롱고롱pc" class="pc">
+
+
+                                </div><!-- .image end -->
+
+
+                            </div><!-- wrap end -->
+
+                            <div class="wrap2">
+                                <div class="image">
+
+                                    <img src="img/gorongtab.png" alt="고롱고롱ta" class="ta">
+
+
+                                </div><!-- .image end -->
+                            </div><!-- wrap2 end -->
+
+
+                        </div><!-- .mockup end -->
+
+                    </section><!-- section-2 end -->
+                </div><!-- div-inner-2 end -->
+
+                <div class="div-inner-3">
+                    <section class="section-3">
+                        <div class="text">
+                            <div class="box">
+                                <div class="title">
+                                    <h2>한국음악<br />저작권협회</h2>
+
+
+                                    <ul class="color">
+                                        <li class="col">웹 리뉴얼 프로젝트</li>
+                                        <li>메인페이지</li>
+
+                                    </ul>
+
+                                </div><!-- .title end -->
+
+
+                                <p>대한민국 문화체육관광부 소관의 사단법인협회인 <em>한국음악저작권협회 리뉴얼프로젝트</em>입니다.<br />
+                                    기존의 관리가 부족했던 웹사이트를 JavaScript/jQuery등의 라이브러리를 활용해 풀페이지로 현시대의 트렌디한 방식에 어울리도록 개선하였으며,
+                                    툴팁과 로고 등을 직접 리디자인하였습니다.
+
+
+                                </p>
+                            </div><!-- .box end -->
+
+
+
+
+
+                            <ul class="list">
+                                <li>#Figma</li>
+                                <li>#photoshop</li>
+                                <li>#HTML5</li>
+                                <li>#illustrator</li>
+                                <li>#CSS</li>
+                                <li>#JavaScript</li>
+                                <li>#jQuery</li>
+                                <li>Fullpage</li>
+                            </ul><!-- list end -->
+
+
+                            <span>기획/디자인/퍼블리싱 100%</span>
+
+                            <em>📌 Click here </em>
+                            <ul class="btn">
+                                <li><a href="https://i-wisheeee.github.io/KOMKA/" target="_blank"><span>Web
+                                            site💻</span></a></li>
+
+                                <li><a href="https://github.com/i-wisheeee/KOMKA" target="_blank"><span>Git hub <img
+                                                src="img/2git.png" alt="git"></span></a></li>
+                                <li><a href="img/한국음악저작권협회.pdf" target="_blank"><span>Process 📁</span></a></li>
+                                <li><a href="https://www.figma.com/design/Mmf0t2A61Xc7DgaLNesH0l/%ED%95%9C%EA%B5%AD%EC%9D%8C%EC%95%85%EC%A0%80%EC%9E%91%EA%B6%8C%ED%98%91%ED%9A%8C%EC%9B%B9%EC%82%AC%EC%9D%B4%ED%8A%B8%EB%A6%AC%EB%89%B4%EC%96%BC?node-id=0-1&p=f&t=69dfCEr738mQMcG3-0"
+                                        target="_blank"><span>Figma <img src="img/2figma.png" alt="figma"></span></a>
+                                </li>
+                                <li><a href="img/komka_notion.pdf" target="_blank"><span>Notion <img
+                                                src="img/2notion.png" alt="notion"></span></a></li>
+                            </ul><!-- btn end -->
+
+                        </div><!-- .text end -->
+
+                        <div class="mockup">
+                            <p>💬이미지위에 마우스를 갖다대면 사진이 스크롤됩니다.🖱</p>
+                            <div class="wrap">
+
+                                <div class="image">
+
+                                    <img src="img/komka.png" alt="한국음악저작권">
+
+                                </div><!-- .image end -->
+
+                            </div><!-- wrap end -->
+
+                        </div><!-- .mockup end -->
+
+                    </section><!-- section-3 end -->
+                </div><!-- div-inner-3 end -->
+
+                <div class="div-inner-4">
+                    <section class="section-4">
+                        <div class="text">
+                            <div class="box">
+                                <div class="title">
+                                    <h2>코레일톡</h2>
+
+                                    <div class="color">
+                                        <p>앱 리디자인 프로젝트</p>
+                                        <ul><!-- 005BAC -->
+
+                                            <li>스플래쉬</li>
+                                            <li>로그인</li>
+                                            <li>온보딩</li>
+                                            <li>메인페이지</li>
+                                            <li>서브페이지</li>
+                                            <li>메뉴</li>
+                                        </ul>
+                                    </div><!-- .color end -->
+                                </div><!-- .title end -->
+
+
+                                <p>철도 여객운송 및 화물운송 사업을 수행하는 국토교통부 산하 준시장형 공기업 <em>코레일의 승차권예매 어플 리디자인 프로젝트</em>입니다.<br />
+                                    기존 공기업 이미지의 다소 경직되고 구식적인 느낌을 개선하고, 보다 친근하게 다가갈수있도록 디자인에 초점을 두었으며,
+                                    사용자 경험의 불편 요소를 최소화하고, 예매 과정을 보다 직관적이고 신속하게 진행할 수 있도록 개선하였습니다.
+                                </p>
+                            </div><!-- .box end -->
+
+
+
+
+
+                            <ul class="list">
+                                <li>#Figma</li>
+
+                                <li>#HTML5</li>
+                                <li>#CSS</li>
+                                <li>#JavaScript</li>
+
+
+                                <li>#SwiperSlide</li>
+                            </ul><!-- list end -->
+
+
+                            <span>기획/디자인/퍼블리싱/프로토타입 100%</span>
+
+                            <em>📌 Click here </em>
+                            <ul class="btn">
+                                <li><a href="https://www.figma.com/proto/AQytXLJqYJFJdfhh2hAxxX/%EC%BD%94%EB%A0%88%EC%9D%BC?t=RClOR4NSQlxN3pVp-0&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&node-id=266-2552&starting-point-node-id=257%3A2535"
+                                        target="_blank"><span>
+                                            prototype💻
+                                        </span></a></li>
+
+                                <li><a href="https://i-wisheeee.github.io/KorailTalk/" target="_blank"><span>Git hub
+                                            <img src="img/2git.png" alt="git"></span></a></li>
+                                <li><a href="img/코레일.pdf" target="_blank"><span>Process 📁</span></a></li>
+                                <li><a href="https://www.figma.com/design/AQytXLJqYJFJdfhh2hAxxX/%EC%BD%94%EB%A0%88%EC%9D%BC?node-id=0-1&p=f&t=356CBRYXXBNvfesf-0"
+                                        target="_blank"><span>Figma <img src="img/2figma.png" alt="figma"></span></a>
+                                </li>
+                                <li><a href="img/ktx_notion.pdf" target="_blank"><span>Notion <img src="img/2notion.png"
+                                                alt="notion"></span></a></li>
+                            </ul><!-- btn end -->
+
+                        </div><!-- .text end -->
+
+
+
+
+
+                        <div class="image">
+
+                            <img src="img/korail.png" alt="코레일톡">
+
+                            <div class="qr">
+                                <img src="img/korail_qr.png" alt="qr">
+                            </div><!-- qr -->
+
+                        </div><!-- .image end -->
+
+
+
+
+
+                    </section><!-- section-4 end -->
+                </div><!-- div-inner-4 end -->
+
+
+                <div class="div-inner-5">
+                    <section class="section-5">
+                        <div class="text">
+                            <div class="box">
+                                <div class="title">
+                                    <h2>스타벅스</h2>
+
+                                    <div class="color">
+                                        <p>앱 리디자인 프로젝트</p>
+                                        <ul><!-- 005BAC -->
+
+                                            <li>메인페이지</li>
+                                            <li>서브페이지</li>
+
+                                        </ul>
+                                    </div><!-- .color end -->
+                                </div><!-- .title end -->
+
+
+                                <p>세계적인 커피기업 <em>스타벅스의 모바일 어플 리디자인 프로젝트</em>입니다.<br />
+                                    기존 어플의 사용자 조사를 통해 개선점을 파악하여 사용자의 관점에서 편리함을 목적으로 하되
+                                    기존 브랜드의 세련된이미지를 지키는데에 초점을 두며 리디자인을 진행하였습니다.
+
+                                </p>
+                            </div><!-- .box end -->
+
+
+
+
+
+                            <ul class="list">
+                                <li>#Photoshop</li>
+                            </ul><!-- list end -->
+
+
+                            <span>기획/디자인 100%</span>
+
+                            <em>📌 Click here </em>
+                            <ul class="btn">
+
+                                <li><a href="img/starpdf.pdf" target="_blank"><span>Project 📒</span></a></li>
+                                <li><a href="img/스타벅스.pdf" target="_blank"><span>Process 📁</span></a></li>
+
+                                <li><a href="img/sta_notion.pdf" target="_blank"><span>Notion <img src="img/2notion.png"
+                                                alt="notion"></span></a></li>
+                            </ul><!-- btn end -->
+
+                        </div><!-- .text end -->
+
+
+
+
+
+                        <div class="image">
+
+                            <img src="img/star.png" alt="스타벅스이미지">
+
+                        </div><!-- .image end -->
+
+
+
+
+
+                    </section><!-- section-5 end -->
+                </div><!-- div-inner-5 end -->
+
+
+                <div class="div-inner-6">
+                    <section class="section-6">
+                        <div class="text">
+                            <div class="box">
+                                <div class="title">
+                                    <h2>쏘카</h2>
+
+                                    <div class="color">
+                                        <p>클론코딩</p>
+                                        <ul><!-- #1770FC -->
+
+                                            <li>메인페이지</li>
+
+
+                                        </ul>
+                                    </div><!-- .color end -->
+                                </div><!-- .title end -->
+
+
+                                <p>한국 최대 규모의 카셰어링 업체 <em>쏘카의 반응형 웹사이트 클론코딩 페이지</em>입니다.<br />
+                                    현재 지속적으로 업데이트중입니다.
+
+                                </p>
+                            </div><!-- .box end -->
+
+
+
+
+
+
+                            <ul class="list">
+
+                                <li>#HTML5</li>
+                                <li>#CSS</li>
+                                <li>#JavaScript</li>
+                                <li>#jQuery</li>
+
+                                <li>#AOS</li>
+                                <li>#SwiperSlide</li>
+                            </ul><!-- list end -->
+
+
+                            <span>클론코딩 100%</span>
+
+                            <em>📌 Click here </em>
+                            <ul class="btn">
+
+                                <li><a href="https://i-wisheeee.github.io/socar/#" target="_blank"><span>Web
+                                            site💻</span></a></li>
+                            </ul><!-- btn end -->
+
+                        </div><!-- .text end -->
+
+
+
+
+
+                        <div class="mockup">
+                            <p>💬이미지위에 마우스를 갖다대면 사진이 스크롤됩니다.🖱</p>
+                            <div class="wrap">
+
+                                <div class="image">
+
+                                    <img src="img/socar.jpg" alt="쏘카">
+
+                                </div><!-- .image end -->
+
+                            </div><!-- wrap end -->
+
+                        </div><!-- .mockup end -->
+
+
+
+
+                    </section><!-- section-6 end -->
+                </div><!-- div-inner-6 end -->
+
+
+            </section><!-- section-04 end -->
+
+
+
+
+
+
+            <!-- 메인5 -->
+
+
+            <section class="section-05" id="section-05">
+                <div class="wrapper-content">
+                    <h2 class="section-title">GRAPHIC DESIGN</h2>
+                    <p class="section-desc">
+                        A Collection of Works in Branding, Editorial, and Digital Design. <br />
+                        이미지에 마우스를 올리면 해당 이미지를 자세히 볼 수 있습니다.
+                    </p>
+
+                    <div class="card-grid">
+
+                        <div class="card-item">
+                            <div class="card-circle"><img src="img/ai.svg" alt="일러스트" /></div>
+                            <h3 class="card-title">청년아 모여라</h3>
+                            <p class="card-desc">
+                                일러스트 3D입체화 효과로 만든 3D글씨포스터를 제작하였습니다.
+                            </p>
+                            <figure class="card-figure">
+                                <img class="card-img" src="img/포스터.jpg" alt="포스터1" loading="lazy" />
+                            </figure>
+                        </div>
+
+                        <div class="card-item">
+                            <div class="card-circle"><img src="img/ai.svg" alt="일러스트" /></div>
+                            <h3 class="card-title">sowon</h3>
+                            <p class="card-desc">
+                                일러스트 부풀리기 효과로 포스터를 제작하였습니다.
+                            </p>
+                            <figure class="card-figure">
+                                <img class="card-img" src="img/sowon2.png" alt="포스터2" loading="lazy" />
+                            </figure>
+                        </div>
+
+                        <div class="card-item">
+                            <div class="card-circle"><img src="img/ai.svg" alt="일러스트"></div>
+                            <h3 class="card-title">유한킴벌리 채용공고 포스터</h3>
+                            <p class="card-desc">
+                                일러스트의 블렌드 모드를 이용하여 피그마와 함께 유한킴벌리의 채용공고 포스터를 제작하였습니다.
+                            </p>
+                            <figure class="card-figure">
+                                <img class="card-img" src="img/you1.png" alt="포스터3" loading="lazy" />
+                            </figure>
+                        </div>
+
+                        <div class="card-item">
+                            <div class="card-circle"><img src="img/ai.svg" alt="ai"></div>
+                            <h3 class="card-title">flower 3D포스터</h3>
+                            <p class="card-desc">일러스트 3D+아트매핑기술로 포스터를 제작하였습니다.</p>
+                            <figure class="card-figure">
+                                <img class="card-img" src="img/flower.jpg" alt="포스터4" loading="lazy" />
+                            </figure>
+                        </div>
+
+                        <div class="card-item">
+                            <div class="card-circle"><img src="img/photo.svg" alt="포토샵" /></div>
+                            <h3 class="card-title">파자마 쇼핑몰 포스터</h3>
+                            <p class="card-desc">
+                                포토샵을 활용한 파자마 쇼핑몰 포스터를 제작하였습니다.
+                            </p>
+                            <figure class="card-figure">
+                                <img class="card-img" src="img/pajama.jpg" alt="포스터5" loading="lazy" />
+                            </figure>
+                        </div>
+
+                        <div class="card-item">
+                            <div class="card-circle"><img src="img/photo.svg" alt="포토샵" /></div>
+                            <h3 class="card-title">헬로우 슬립</h3>
+                            <p class="card-desc">
+                                포토샵을 활용한 움직이는 gif 포스터를 제작하였습니다.
+                            </p>
+                            <figure class="card-figure">
+                                <img class="card-img" src="img/헬로우슬립.gif" alt="포스터6" loading="lazy" />
+                            </figure>
+                        </div>
+
+                        <div class="card-item">
+                            <div class="card-circle"><img src="img/photo.svg" alt="포토샵" /></div>
+                            <h3 class="card-title">파마자쇼핑몰 상세페이지 제작 <br /> (이미지를 클릭해주세요)</h3>
+                            <p class="card-desc">
+                                포토샵을 활용한 파자마 쇼핑몰 상세페이지를 제작하였습니다.
+                                *일부 이미지는 포트폴리오용제작목적으로 사용되었으며 출처가 있음을 밝힙니다. 출처:핀터레스트-w컨셉*
+                            </p>
+                            <figure class="card-figure">
+                                <a href="img/상세페이지.jpg" target="_blank">
+                                    <img class="card-img" src="img/상세페이지.jpg" alt="포스터7" loading="lazy" />
+                                </a>
+                            </figure>
+                        </div>
+
+                        <div class="card-item">
+                            <div class="card-circle"><img src="img/photo.svg" alt="포토샵" /></div>
+                            <h3 class="card-title">애견동반 펜션 포스터</h3>
+                            <p class="card-desc">
+                                포토샵을 활용한 애견동반 펜션 포스터를 제작하였습니다.
+                            </p>
+                            <figure class="card-figure">
+                                <img class="card-img" src="img/photo.jpg" alt="포스터8" loading="lazy" />
+                            </figure>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+
+
+
+
+        </main><!-- .main end -->
+        <div class="topbtn" id="topbtn">
+            <a href="#"><img src="img/top.svg" alt="top"><em>top</em></a>
+        </div><!-- topbtn end -->
+
+
+
+        <footer class="footer" id="footer">
+
+
+            <!--  <a href="img/kim.pdf" class="port" target="_blank">Portfolio PDF</a> -->
+
+            <div class="utill">
+
+                <ul class="con">
+                    <li><a href="#">kakao</a></li>
+                    <li><a href="#">Mail</a></li>
+                    <li><a href="#">Phone</a></li>
+                    <li><a href="#">Portfolio PDF</a></li>
+
+
+                </ul><!--con end  -->
+
+                <!-- 모달 -->
+                <div id="modalContent">
+                    <div id="modalBox">
+                        <p id="modalText"></p>
+                        <button id="modalClose">닫기</button>
+                    </div>
+                </div>
+
+                <div class="footnav">
+                    <ul class="gnb">
+                        <li>
+                            <a class="depth-01">Q. 이번 포트폴리오를 준비하면서 어떤 점이 가장어려웠나요?</a>
+                            <ul class="depth-02">
+                                <li><em>A.</em> 디자인이라는 분야를 새로 접하다 보니 모든것이 낯설고 생소해서 4개월이라는 기간이
+                                    너무짧고 부족했던 것이 사실이었습니다. <br />
+                                    그래서 컨셉에맞는 스크립트를 연구하고 결과값을 도출해내는것에 한계가 있었고 라이브러리들을 수집하는데에 있어서
+                                    시간들을 많이 소모하기도하고 <br />
+                                    결국엔 또 새롭게 포트폴리오를 재정비하게 되면서 체력소모에 큰 지장을 겪기도 했지만 실패를 경험하면서 도출해 냈던
+                                    과정속에서 결국엔 더 많은 지식을 쌓는데에 도움이되었다고 생각합니다.
+                                </li>
+                            </ul><!-- depth-02 end -->
+                        </li>
+                        <li>
+                            <a class="depth-01">Q.5개월의 교육 기간동안 어떤점을 배우게되었나요?</a>
+                            <ul class="depth-02">
+                                <li><em>A.</em>5개월 동안 단순히 예쁘게 만드는 디자인이 전부가 아니라는 것을 깊게 배웠습니다.
+                                    처음에는 개성이나 독창성이 가장 중요하다고 생각했지만, 교육 과정에서 가장 먼저 깨달은 것은 디자인은 사용자의 입장에서 시작해야 한다는
+                                    점이었습니다.<br />
+
+                                    두 번째로는 접근성과 심미성의 균형입니다. 누구나 편하게 사용할 수 있으면서도 브랜드의 감성과 미적 완성도를 동시에 담아내는 것이 진짜 디자인이라는
+                                    것을 배웠습니다.<br />
+
+                                    이 과정을 통해 ‘디자인은 배려를 시각화하는 것’이라는 말을 몸소 느끼게 되었고, 인생을 살아오면서 손에 꼽히게 열정을 가지고 배우며 성장한
+                                    시간들이었습니다.<br />
+                                    앞으로도 계속 배우고 성장할 준비가 되어 있으며, 새로운 환경에서도 열린 마음으로 적극적으로 배우고 빠르게 흡수하는 사람이 될것입니다.
+                                </li>
+                            </ul><!-- depth-02 end -->
+                        </li>
+                        <li>
+                            <a class="depth-01">Q.어떤 사원이 되고싶나요?/ 이전의 회사에서는 왜 이직을 하게되었나요?</a>
+                            <ul class="depth-02">
+                                <li><em>A.</em>저는 수동적으로 지시만 따르는 사람이 아니라, 배운 것 이상을 스스로 확장해 나갈 수 있는 능동적인 사원이 되고 싶습니다.
+                                    하나를 배우면 그대로 적용하는 데서 끝나는 것이 아니라, 왜 그런 방식이 필요한지 이해하고 여러 관점에서 응용할 수 있는 사람이 되고자
+                                    합니다.<br />
+
+                                    이전 직장에서 이직을 결심한 이유도 성장의 한계 때문이었습니다. 더 배우고, 더 발전하고, 팀에 실질적인 도움이 되는 인재가 되고 싶은 마음이 컸기
+                                    때문입니다.<br />
+
+                                    이번 기회가 주어진다면, 회사가 필요로 하는 방향에 맞춰 제 역량을 적극적으로 키워 ‘함께 성장하는 사람’으로서 꼭 필요한 사원이 되고
+                                    싶습니다.<br />
+                                </li>
+                            </ul><!-- depth-02 end -->
+                        </li>
+                    </ul><!--.gnb end  -->
+                </div><!-- footnav end -->
+
+
+
+
+
+
+                <div class="menu">
+                    <p>Go to Menu</p>
+                    <ul>
+                        <li><a href="#main_visual">main</a></li>
+                        <li><a href="#section-01">intro</a></li>
+                        <li><a href="#section-02">about</a></li>
+                        <li><a href="#section-04">project</a></li>
+                        <li><a href="#section-05">graphic design</a></li>
+                    </ul>
+                </div><!-- .menu end -->
+            </div><!-- utill end -->
+
+
+            <div class="container">
+                <h3>contact me contact me contact me contact me contact me contact me contact me contact me
+                    contact
+                    me contact me contact me contact me contact me contact me contact me contact me contact me
+                    contact me contact me contact me contact me contact me contact me contact me contact me
+                    contact
+                    me contact me contact me contact me </h3>
+                <h3>contact me contact me contact me contact me contact me contact me contact me contact me
+                    contact
+                    me contact me contact me contact me contact me contact me contact me contact me contact me
+                    contact me contact me contact me contact me contact me contact me contact me contact me
+                    contact
+                    me contact me contact me contact me </h3>
+
+
+            </div><!-- container -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <p class="all"> 본 홈페이지는 포트폴리오용으로 제작되었으며 지속적으로 업데이트 예정입니다. <br /> © 2025 김소원. All rights reserved.
+            </p>
+
+        </footer><!-- footer end -->
+
+    </div><!-- wrap end -->
+</body>
+
+</html>

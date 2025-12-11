@@ -1,0 +1,91 @@
+@font-face {
+    font-family: 'dancingscript';
+    src: url('https://fonts.gstatic.com/s/dancingscript/v26/If2RXzVFAaJkStIuYn7h_FMRW0lT_y5J.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'dancingscript';
+    src: url('https://fonts.gstatic.com/s/dancingscript/v26/If2RXzVFAaJkStIuYn7h_FMRW0lT_w5J.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Paperozi';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-5Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Paperozi';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-7Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Cafe24MeongiWhite';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2405-3@1.1/Cafe24Meongi-W-v1.0.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+}
+
+
+:root {
+
+    --r: 3rem;
+    --s: 4rem;
+    --marquee-width: 100vw;
+    --marquee-height: 20vh;
+    --marquee-elements: 11;
+    --marquee-elements-displayed: 5;
+    --marquee-element-width: calc(var(--marquee-width) / var(--marquee-elements-displayed));
+    --marquee-animation-duration: calc(var(--marquee-elements) * 3s);
+
+
+    --accent: #2f74ff;
+    --accent-2: #9ac0ff;
+    --white: #fff;
+    --glass: rgba(255, 255, 255, 0.12);
+    --glass-2: rgba(255, 255, 255, 0.08);
+    --stroke: rgba(255, 255, 255, 0.18);
+    --shadow-strong: 0 24px 80px rgba(0, 0, 0, .45);
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, .25);
+}
+
+html,
+body {
+    /* font-size: 10px; */
+    font-size: 62.5%;
+    /* background-color: #d3ebd1; */
+
+    font-family: 'Paperozi', sans-serif;
+    font-weight: 500;
+}
+
+.wrapper {
+    max-width: 192rem;
+    margin: 0 auto;
+}
+
+
+
+.section-01 button,
+.section-02,
+.section-01 h2,
+.section-03 {
+    font-family: 'Paperozi', sans-serif;
+}
+
+@media screen and(max-width: 1440px) {
+
+    body,
+    html {
+        font-size: 50%;
+    }
+}
